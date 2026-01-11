@@ -33,3 +33,11 @@ $ ./bin/huffman_stats <path_to_file>
 * Branching: All work for the current phase must be done on a feature branch (e.g., phase-1-analysis).
 * Commits: Use descriptive, imperative commit messages (e.g., "feat: implement buffered file reading").
 * Memory: All allocated memory must be freed. Code will be audited using Valgrind.
+
+## 🧪 Testing
+We are using Victor Hugo's "Les Misérables" as our primary benchmark for Phase 1. 
+
+To run the stress test:
+$ ./bin/huffman_stats tests/les_miserables.txt
+
+Your implementation should handle the ~3.3MB file instantly.
