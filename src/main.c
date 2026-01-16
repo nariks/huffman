@@ -15,9 +15,10 @@ int main(int argc, char *argv[]) {
     printf("--- Frequency Analysis: %s ---\n", argv[1]);
     for (int i = 0; i < 256; i++) {
         if (map.counts[i] > 0) {
-            printf("0x%02X (%c): %llu\n", i, (i >= 32 && i <= 126) ? i : '.', map.counts[i]);
+            // Print printable chars, otherwise show a dot
+            char display = (i >= 32 && i <= 126) ? (char)i : '.';
+            printf("0x%02X (%c): %llu\n", i, display, map.counts[i]);
         }
     }
-
     return 0;
 }

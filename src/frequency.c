@@ -1,5 +1,8 @@
 #include "frequency.h"
 #include <stdio.h>
+#include <stdlib.h>
+
+#define BUFFER_SIZE 4096
 
 int calculate_frequencies(const char *filepath, FrequencyMap *map) {
     FILE *file = fopen(filepath, "rb");
@@ -13,9 +16,14 @@ int calculate_frequencies(const char *filepath, FrequencyMap *map) {
         map->counts[i] = 0;
     }
 
-    // TODO: Implement Buffered I/O here using fread()
-    // Loop through the file, update map->counts[byte]
-    
+    unsigned char buffer[BUFFER_SIZE];
+    size_t bytes_read;
+    while ((bytes_read = fread(buffer, 1, BUFFER_SIZE, file)) > 0) {
+        for (size_t i = 0; i < bytes_read; i++) {
+            map->counts[buffer[i]]++;
+        }
+    }
+
     fclose(file);
     return 0;
 }
