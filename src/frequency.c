@@ -32,8 +32,9 @@ int calculate_frequencies(const char *filepath, FrequencyMap *map) {
             emptyFile = false;
     }
 
+    // Empty file handling
     if (emptyFile)
-        printf("File is empty!\n");
+        printf("File is empty. Nothing to report!\n");
         
     fclose(file);
 
