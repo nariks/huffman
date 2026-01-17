@@ -18,25 +18,23 @@ int calculate_frequencies(const char *filepath, FrequencyMap *map) {
 
     // TODO: Implement Buffered I/O here using fread()
     // Loop through the file, update map->counts[byte]
-    uint8_t buffer[BUFFER_SIZE];
-    int readCount;
-    bool emptyFile = true;
+    unsigned char buffer[BUFFER_SIZE];
+    size_t readCount = 0;
+    size_t totalBytes = 0;
 
-    while((readCount = fread(buffer, sizeof(char), BUFFER_SIZE, file)) > 0) {
+    while((readCount = fread(buffer, 1 , BUFFER_SIZE, file)) > 0) {
         
-        for(int i = 0; i < readCount; i++) {
+        for(size_t i = 0; i < readCount; i++) {
             map->counts[buffer[i]]++;
         }
 
-        if (emptyFile)
-            emptyFile = false;
+        totalBytes += readCount;
     }
 
     // Empty file handling
-    if (emptyFile)
-        printf("File is empty. Nothing to report!\n");
+    if (totalBytes == 0)
+        fprintf(stderr, "File is empty. Nothing to report!\n");
         
     fclose(file);
-
     return 0;
 }
