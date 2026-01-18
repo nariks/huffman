@@ -1,6 +1,5 @@
 #include "frequency.h"
 #include <stdio.h>
-#include <stdbool.h>
 
 #define BUFFER_SIZE 4096
 
