@@ -36,16 +36,16 @@ int main(int argc, char *argv[]) {
     }
 
     // --- Phase 2: Building the Tree ---
-    /* * TODO 2.1: Initialize the Priority Queue
+    /* * TODO 4.0: Initialize the Priority Queue
      * Use map.unique_chars to determine the initial capacity of your Min-Heap.
      */
 
-    /* * TODO 2.2: Load the Leaf Nodes
+    /* * TODO 4.1: Load the Leaf Nodes
      * Iterate through your FrequencyMap and insert a leaf node for every 
      * character with a count > 0 into your Priority Queue.
      */
 
-    /* * TODO 2.3: Build the Huffman Tree
+    /* * TODO 4.2: Build the Huffman Tree
      * Implement the Huffman algorithm:
      * 1. While the PQ has more than 1 node:
      * a. Extract the two nodes with the lowest frequency.
@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
     print_huffman_codes(root, path_buffer, 0);
 
     // --- Cleanup ---
-    /* * TODO 2.5: Memory Management
+    /* * TODO 4.3: Memory Management
      * Ensure you have a recursive function to free your tree and
      * a function to destroy your Priority Queue to prevent memory leaks.
      */
