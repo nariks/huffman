@@ -1,35 +1,33 @@
-# Compiler and Standard
 CC = gcc
-CFLAGS = -std=c11 -Wall -Wextra -Wpedantic -Werror -Iinclude
-
-# Target Executable
-TARGET = huffman_stats
-
-# Directories
+CFLAGS = -Wall -Wextra -Werror -std=c11 -Iinclude
 SRC_DIR = src
 OBJ_DIR = obj
+BIN_DIR = bin
 
-# Find all .c files in src/ and convert them to .o files in obj/
+# Automatically find all .c files in src
 SRCS = $(wildcard $(SRC_DIR)/*.c)
+# Map those to .o files in obj
 OBJS = $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
+# The final executable name
+TARGET = $(BIN_DIR)/huffman_stats
 
-# Default Rule
 all: $(TARGET)
 
-# Linking the final executable
-$(TARGET): $(OBJS)
+# Link
+$(TARGET): $(OBJS) | $(BIN_DIR)
 	$(CC) $(CFLAGS) $(OBJS) -o $(TARGET)
 
-# Compiling source files to object files
+# Compile
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Create object directory if it doesn't exist
-$(OBJ_DIR):
-	mkdir -p $(OBJ_DIR)
+# Create directories
+$(BIN_DIR) $(OBJ_DIR):
+	mkdir -p $@
 
-# Cleanup
+# Clean up EVERYTHING
 clean:
-	rm -rf $(OBJ_DIR) $(TARGET)
+	@echo "Cleaning up build artifacts..."
+	rm -rf $(OBJ_DIR) $(BIN_DIR)
 
 .PHONY: all clean

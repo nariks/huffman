@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include "frequency.h"
+#include "priority_queue.h"
+#include "tree.h"
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
@@ -24,5 +26,56 @@ int main(int argc, char *argv[]) {
     }
     printf("\n");
 
+    // --- Phase 2: Building the Tree ---
+    printf("=== File Statistics ===\n");
+    printf("Unique Bytes:  %u\n\n", map.unique_chars);
+
+    if (map.unique_chars == 0) {
+        printf("File is empty. No tree to build.\n");
+        return 0;
+    }
+
+    // --- Phase 2: Building the Tree ---
+    /* * TODO 2.1: Initialize the Priority Queue
+     * Use map.unique_chars to determine the initial capacity of your Min-Heap.
+     */
+
+    /* * TODO 2.2: Load the Leaf Nodes
+     * Iterate through your FrequencyMap and insert a leaf node for every 
+     * character with a count > 0 into your Priority Queue.
+     */
+
+    /* * TODO 2.3: Build the Huffman Tree
+     * Implement the Huffman algorithm:
+     * 1. While the PQ has more than 1 node:
+     * a. Extract the two nodes with the lowest frequency.
+     * b. Create a new internal node with these two as children.
+     * c. Insert the new internal node back into the PQ.
+     * 2. The remaining node in the PQ is your Tree Root.
+     */
+    int internal_nodes_created = 0; // Track this to verify tree integrity
+
+    HuffmanNode *root = NULL;
+
+    printf("=== Tree Validation ===\n");
+    printf("Expected Internal Nodes: %u\n", map.unique_chars - 1);
+    printf("Actual Internal Nodes:   %d\n", internal_nodes_created);
+
+    if (internal_nodes_created == (int)map.unique_chars - 1) {
+        printf("Result: ✅ Tree structure is mathematically sound.\n\n");
+    } else {
+        printf("Result: ❌ Tree structure is corrupted!\n\n");
+    }
+
+    printf("=== Huffman Codes ===\n");
+    char path_buffer[256];
+    print_huffman_codes(root, path_buffer, 0);
+
+    // --- Cleanup ---
+    /* * TODO 2.5: Memory Management
+     * Ensure you have a recursive function to free your tree and
+     * a function to destroy your Priority Queue to prevent memory leaks.
+     */
+    
     return 0;
 }
