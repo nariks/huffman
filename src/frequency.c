@@ -11,29 +11,37 @@ int calculate_frequencies(const char *filepath, FrequencyMap *map) {
     }
 
     // Initialize counts to zero
+    /* TODO 1.0: Initialize map->unique_chars here also */
     for (int i = 0; i < 256; i++) {
         map->counts[i] = 0;
     }
 
-    // TODO: Implement Buffered I/O here using fread()
-    // Loop through the file, update map->counts[byte]
     unsigned char buffer[BUFFER_SIZE];
-    size_t readCount = 0;
-    size_t totalBytes = 0;
+    size_t bytes_read;
+    size_t total_read = 0;
 
-    while((readCount = fread(buffer, 1 , BUFFER_SIZE, file)) > 0) {
-        
-        for(size_t i = 0; i < readCount; i++) {
+    while ((bytes_read = fread(buffer, 1, BUFFER_SIZE, file)) > 0) {
+        total_read += bytes_read;
+        for (size_t i = 0; i < bytes_read; i++) {
+            /* * TODO 1.1: Calculate Unique Characters
+             * Iterate through the map->counts array. 
+             * For every index where the count is greater than 0, 
+             * increment map->unique_chars.
+             * * This value is critical for Phase 2 memory allocation.
+             */
             map->counts[buffer[i]]++;
-        }
 
-        totalBytes += readCount;
+            if (map->counts[buffer[i]] == 1) {
+                map->unique_chars++;
+                //printf("uniq chars %u", map->unique_chars);
+            }
+        }
     }
 
-    // Empty file handling
-    if (totalBytes == 0)
-        fprintf(stderr, "File is empty. Nothing to report!\n");
-        
+    if (total_read == 0) {
+        fprintf(stderr, "Warning: %s is empty. No frequencies to analyze.\n", filepath);
+    }
+
     fclose(file);
     return 0;
 }
