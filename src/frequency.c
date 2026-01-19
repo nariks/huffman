@@ -24,7 +24,7 @@ int calculate_frequencies(const char *filepath, FrequencyMap *map) {
         total_read += bytes_read;
         for (size_t i = 0; i < bytes_read; i++) {
             /* * TODO 1.1: Calculate Unique Characters
-             * Iterate through the map->counts array. 
+             * Iterate through the map->counts array. uni
              * For every index where the count is greater than 0, 
              * increment map->unique_chars.
              * * This value is critical for Phase 2 memory allocation.
@@ -33,7 +33,6 @@ int calculate_frequencies(const char *filepath, FrequencyMap *map) {
 
             if (map->counts[buffer[i]] == 1) {
                 map->unique_chars++;
-                //printf("uniq chars %u", map->unique_chars);
             }
         }
     }
