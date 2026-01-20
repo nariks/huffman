@@ -30,10 +30,12 @@ int calculate_frequencies(const char *filepath, FrequencyMap *map) {
              * * This value is critical for Phase 2 memory allocation.
              */
             map->counts[buffer[i]]++;
+        }
+    }
 
-            if (map->counts[buffer[i]] == 1) {
+    for (int i = 0; i < 256; i++) {
+        if (map->counts[i] > 0) {
                 map->unique_chars++;
-            }
         }
     }
 
