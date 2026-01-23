@@ -69,6 +69,9 @@ HuffmanNode* pq_extract_min(PriorityQueue *pq) {
 
     if (pq_is_empty(pq)) {
         return NULL;
+    } else if (pq->size == 1) {
+        pq->size--;
+        return pq->nodes[0];
     }
 
     uint32_t last_index = pq->size - 1;
@@ -78,6 +81,10 @@ HuffmanNode* pq_extract_min(PriorityQueue *pq) {
     pq->nodes[last_index] = NULL;
     pq->size--;
     last_index--;
+
+    if (last_index == 0) {
+        return min_node;
+    }
 
     uint32_t parent_index = 0;
 
@@ -142,10 +149,10 @@ bool pq_is_empty(PriorityQueue *pq) {
 }
 
 void pq_destroy(PriorityQueue *pq) {
-    // Suppress -Wunused-parameter until student implementation
-    (void)pq; 
     /* * TODO 3.4: Destructor
      * Clean up all memory allocated in pq_create.
      * NOTE: Do NOT free the HuffmanNodes themselves here.
      */
+    free(pq->nodes);
+    free(pq);
 }

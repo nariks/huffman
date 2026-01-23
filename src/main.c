@@ -41,10 +41,25 @@ int main(int argc, char *argv[]) {
      * Use map.unique_chars to determine the initial capacity of your Min-Heap.
      */
 
+    PriorityQueue *pq = pq_create(map.unique_chars);
+
     /* * TODO 4.1: Load the Leaf Nodes
      * Iterate through your FrequencyMap and insert a leaf node for every 
      * character with a count > 0 into your Priority Queue.
      */
+
+    for (int i = 0; i < 256; i++) {
+        if (map.counts[i] > 0) {
+            HuffmanNode *leaf_node = create_leaf_node(i, map.counts[i]);
+            pq_insert(pq, leaf_node);
+            // for (uint32_t i = 0; i < pq->size; i++) {
+            //     printf("element %u: %llu\n",i, pq->nodes[i]->freq);
+            //     printf("element %u: %c\n",i, pq->nodes[i]->value);
+            // }
+            //printf("---\n");
+        }
+
+    }
 
     /* * TODO 4.2: Build the Huffman Tree
      * Implement the Huffman algorithm:
@@ -54,9 +69,32 @@ int main(int argc, char *argv[]) {
      * c. Insert the new internal node back into the PQ.
      * 2. The remaining node in the PQ is your Tree Root.
      */
+
+    // for (uint32_t i = 0; i < pq->size; i++) {
+    //     printf("element %u: %llu\n",i, pq->nodes[i]->freq);
+    //     printf("element %u: %c\n",i, pq->nodes[i]->value);
+    // }
+
+
     int internal_nodes_created = 0; // Track this to verify tree integrity
 
-    HuffmanNode *root = NULL;
+    
+    
+
+    while((pq->size) > 1) {
+        //printf("pq size: %u\n", pq->size);
+        HuffmanNode *left =  pq_extract_min(pq);
+        //printf("pq size @ mid: %u\n", pq->size);
+        //printf("left: %llu\n",left->freq);
+        HuffmanNode *right = pq_extract_min(pq);
+        //printf("left: %llu, right: %llu\n",left->freq, right->freq);
+        HuffmanNode *internal = create_internal_node(left, right);
+        pq_insert(pq, internal);
+        internal_nodes_created++;
+        //printf("pq size @ end: %u\n", pq->size);
+
+    }
+    HuffmanNode *root = pq_extract_min(pq);
 
     printf("=== Tree Validation ===\n");
     printf("Expected Internal Nodes: %u\n", map.unique_chars - 1);
@@ -77,6 +115,9 @@ int main(int argc, char *argv[]) {
      * Ensure you have a recursive function to free your tree and
      * a function to destroy your Priority Queue to prevent memory leaks.
      */
+
+    free_tree(root);
+    pq_destroy(pq);
     
     return 0;
 }
