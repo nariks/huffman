@@ -9,7 +9,7 @@ SRCS = $(wildcard $(SRC_DIR)/*.c)
 # Map those to .o files in obj
 OBJS = $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 # The final executable name
-TARGET = $(BIN_DIR)/huffman_stats
+TARGET = $(BIN_DIR)/huffman
 
 all: $(TARGET)
 

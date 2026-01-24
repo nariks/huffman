@@ -2,51 +2,74 @@
 #include "priority_queue.h"
 
 PriorityQueue* pq_create(uint32_t capacity) {
-    // Suppress -Wunused-parameter until student implementation
-    (void)capacity; 
-    /* * TODO 3.0: Constructor
-     * 1. Allocate memory for the PriorityQueue struct.
-     * 2. Allocate the internal 'nodes' array for (capacity) HuffmanNode pointers.
-     * 3. Initialize size to 0 and store the capacity.
-     */
-    return NULL; 
+    PriorityQueue *pq = malloc(sizeof(PriorityQueue));
+    pq->nodes = malloc(sizeof(HuffmanNode*) * capacity);
+    pq->size = 0;
+    pq->capacity = capacity;
+    return pq;
 }
 
 void pq_insert(PriorityQueue *pq, HuffmanNode *node) {
-    // Suppress -Wunused-parameter until student implementation
-    (void)pq;   
-    (void)node; 
-    /* * TODO 3.1: "Sift-Up" (Insertion)
-     * Implement the O(log n) heap insertion. 
-     * The node must bubble up until its parent has a lower or equal frequency.
-     */
+    uint32_t i = pq->size++;
+    while (i > 0) {
+        uint32_t p = (i - 1) / 2; // Find the Boss
+        if (pq->nodes[p]->freq <= node->freq) break;
+        pq->nodes[i] = pq->nodes[p]; // Boss moves down
+        i = p;
+    }
+    pq->nodes[i] = node; // Node climbs to its spot
 }
 
 HuffmanNode* pq_extract_min(PriorityQueue *pq) {
-    // Suppress -Wunused-parameter until student implementation
-    (void)pq; 
-    /* TODO 3.2: "Sift-Down" (Extraction)
-     * 1. Extract the root and move the last leaf to the top.
-     * 2. Restore the Min-Heap property by "sinking" the new root.
-     * 3. At each step, compare the node with its SMALLEST child.
-     * 4. Stop when the node is smaller than both children or hits the bottom.
-     * * Note: Be careful with your array bounds when checking for children!
-     */
-    return NULL;
+    // 1. Check if the queue is empty
+    if (pq->size == 0) return NULL;
+
+    // 2. The "CEO" (smallest freq) is always at Index 0
+    HuffmanNode *min_node = pq->nodes[0];
+
+    // 3. Remove the last node in the array to fill the hole
+    HuffmanNode *last_node = pq->nodes[--pq->size];
+
+    // 4. If the queue is now empty, just return the node
+    if (pq->size == 0) {
+        pq->nodes[0] = NULL; // Optional safety
+        return min_node;
+    }
+
+    // 5. Percolate Down (Sift-Down)
+    uint32_t i = 0;
+    uint32_t child = 1; // Start by looking at the Left Child (0 * 2 + 1)
+
+    while (child < pq->size) {
+        // If the Right child exists and is smaller than the Left, pick the Right
+        if (child + 1 < pq->size && pq->nodes[child + 1]->freq < pq->nodes[child]->freq) {
+            child++;
+        }
+
+        // Tie-breaker logic: If our last_node is smaller or equal, we've found its home
+        if (last_node->freq <= pq->nodes[child]->freq) {
+            break;
+        }
+
+        // Move the smaller child up into the current hole
+        pq->nodes[i] = pq->nodes[child];
+
+        // Update our index to the child's old spot and calculate the next level
+        i = child;
+        child = i * 2 + 1;
+    }
+
+    // 6. Place the last_node into its final resting spot
+    pq->nodes[i] = last_node;
+
+    return min_node;
 }
 
 bool pq_is_empty(PriorityQueue *pq) {
-    // Suppress -Wunused-parameter until student implementation
-    (void)pq;
-    /* * TODO 3.3: Return true if the PQ size is 0. */
-    return true; 
+    return pq->size == 0;
 }
 
 void pq_destroy(PriorityQueue *pq) {
-    // Suppress -Wunused-parameter until student implementation
-    (void)pq; 
-    /* * TODO 3.4: Destructor
-     * Clean up all memory allocated in pq_create.
-     * NOTE: Do NOT free the HuffmanNodes themselves here.
-     */
+    free(pq->nodes);
+    free(pq);
 }

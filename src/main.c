@@ -35,27 +35,26 @@ int main(int argc, char *argv[]) {
         return 0;
     }
 
-    // --- Phase 2: Building the Tree ---
-    /* * TODO 4.0: Initialize the Priority Queue
-     * Use map.unique_chars to determine the initial capacity of your Min-Heap.
-     */
+    PriorityQueue *pq = pq_create(map.unique_chars);
 
-    /* * TODO 4.1: Load the Leaf Nodes
-     * Iterate through your FrequencyMap and insert a leaf node for every 
-     * character with a count > 0 into your Priority Queue.
-     */
+    // 1. Load the Priority Queue
+    for (int i = 0; i < 256; i++) {
+        if (map.counts[i] > 0) {
+            pq_insert(pq, create_leaf_node((unsigned char)i, map.counts[i]));
+        }
+    }
 
-    /* * TODO 4.2: Build the Huffman Tree
-     * Implement the Huffman algorithm:
-     * 1. While the PQ has more than 1 node:
-     * a. Extract the two nodes with the lowest frequency.
-     * b. Create a new internal node with these two as children.
-     * c. Insert the new internal node back into the PQ.
-     * 2. The remaining node in the PQ is your Tree Root.
-     */
-    int internal_nodes_created = 0; // Track this to verify tree integrity
+    // 2. Build the Tree
+    // As the Lead, we track internal nodes to verify tree integrity
+    int internal_nodes_created = 0;
+    while (pq->size > 1) {
+        HuffmanNode *left = pq_extract_min(pq);
+        HuffmanNode *right = pq_extract_min(pq);
+        pq_insert(pq, create_internal_node(left, right));
+        internal_nodes_created++;
+    }
 
-    HuffmanNode *root = NULL;
+    HuffmanNode *root = pq_extract_min(pq);
 
     printf("=== Tree Validation ===\n");
     printf("Expected Internal Nodes: %u\n", map.unique_chars - 1);
@@ -72,10 +71,8 @@ int main(int argc, char *argv[]) {
     print_huffman_codes(root, path_buffer, 0);
 
     // --- Cleanup ---
-    /* * TODO 4.3: Memory Management
-     * Ensure you have a recursive function to free your tree and
-     * a function to destroy your Priority Queue to prevent memory leaks.
-     */
+    free_tree(root);
+    pq_destroy(pq);
     
     return 0;
 }
