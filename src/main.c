@@ -52,11 +52,6 @@ int main(int argc, char *argv[]) {
         if (map.counts[i] > 0) {
             HuffmanNode *leaf_node = create_leaf_node(i, map.counts[i]);
             pq_insert(pq, leaf_node);
-            // for (uint32_t i = 0; i < pq->size; i++) {
-            //     printf("element %u: %llu\n",i, pq->nodes[i]->freq);
-            //     printf("element %u: %c\n",i, pq->nodes[i]->value);
-            // }
-            //printf("---\n");
         }
 
     }
@@ -70,30 +65,16 @@ int main(int argc, char *argv[]) {
      * 2. The remaining node in the PQ is your Tree Root.
      */
 
-    // for (uint32_t i = 0; i < pq->size; i++) {
-    //     printf("element %u: %llu\n",i, pq->nodes[i]->freq);
-    //     printf("element %u: %c\n",i, pq->nodes[i]->value);
-    // }
-
-
     int internal_nodes_created = 0; // Track this to verify tree integrity
 
-    
-    
-
     while((pq->size) > 1) {
-        //printf("pq size: %u\n", pq->size);
         HuffmanNode *left =  pq_extract_min(pq);
-        //printf("pq size @ mid: %u\n", pq->size);
-        //printf("left: %llu\n",left->freq);
         HuffmanNode *right = pq_extract_min(pq);
-        //printf("left: %llu, right: %llu\n",left->freq, right->freq);
         HuffmanNode *internal = create_internal_node(left, right);
         pq_insert(pq, internal);
         internal_nodes_created++;
-        //printf("pq size @ end: %u\n", pq->size);
-
     }
+
     HuffmanNode *root = pq_extract_min(pq);
 
     printf("=== Tree Validation ===\n");
@@ -116,8 +97,9 @@ int main(int argc, char *argv[]) {
      * a function to destroy your Priority Queue to prevent memory leaks.
      */
 
-    free_tree(root);
     pq_destroy(pq);
+    free_tree(root);
+    
     
     return 0;
 }

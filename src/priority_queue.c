@@ -67,6 +67,7 @@ HuffmanNode* pq_extract_min(PriorityQueue *pq) {
      * * Note: Be careful with your array bounds when checking for children!
      */
 
+    //dealing with empty queue or queue with one element
     if (pq_is_empty(pq)) {
         return NULL;
     } else if (pq->size == 1) {
@@ -76,6 +77,7 @@ HuffmanNode* pq_extract_min(PriorityQueue *pq) {
 
     uint32_t last_index = pq->size - 1;
 
+    //Extracting root and moving last leaf to top
     HuffmanNode *min_node = pq->nodes[0];
     pq->nodes[0] = pq->nodes[last_index];
     pq->nodes[last_index] = NULL;
@@ -88,40 +90,41 @@ HuffmanNode* pq_extract_min(PriorityQueue *pq) {
 
     uint32_t parent_index = 0;
 
+    //sinking the new root
     while(1) {
         uint32_t left_child_index = (2 * parent_index) + 1;
         uint32_t right_child_index = (2 * parent_index) + 2;
         uint64_t parent_freq = pq->nodes[parent_index]->freq;
 
+        //if root has both left and right children
         if (right_child_index <= last_index) {
             uint64_t right_freq = pq->nodes[right_child_index]->freq;
             uint64_t left_freq = pq->nodes[left_child_index]->freq;
 
-            if (parent_freq < left_freq && parent_freq < right_freq) {
-            break;
+            uint64_t smallest_freq = parent_freq;
+            uint32_t smallest_index = parent_index;
+            
+            if (smallest_freq > left_freq) {
+                smallest_index = left_child_index;
+                smallest_freq = left_freq;
             } 
 
-            if (right_freq >= left_freq) {
-                if (parent_freq > left_freq) { 
-                    HuffmanNode *temp = pq->nodes[left_child_index];
-                    pq->nodes[left_child_index] = pq->nodes[parent_index];
-                    pq->nodes[parent_index] = temp;
-                    parent_index = left_child_index;
-                } else {
-                    break;
-                }
-            } else if (right_freq < left_freq) {
-                if (parent_freq > right_freq) {
-                    HuffmanNode *temp = pq->nodes[right_child_index];
-                    pq->nodes[right_child_index] = pq->nodes[parent_index];
-                    pq->nodes[parent_index] = temp;
-                    parent_index = right_child_index;
-                } else {
-                    break;
-                }
+            if (smallest_freq > right_freq) {
+                smallest_index = right_child_index;
+                smallest_freq = right_freq;
             }
 
-        } else if (left_child_index <= last_index) {
+            if (smallest_freq != parent_freq) {
+                HuffmanNode *temp = pq->nodes[smallest_index];
+                pq->nodes[smallest_index] = pq->nodes[parent_index];
+                pq->nodes[parent_index] = temp;
+                parent_index = smallest_index;
+            } else {
+                break;
+            }
+        
+        // if root has left child only    
+        } else if (left_child_index <= last_index) {        
             uint64_t left_freq = pq->nodes[left_child_index]->freq;
 
             if (parent_freq > left_freq) { 
@@ -132,6 +135,7 @@ HuffmanNode* pq_extract_min(PriorityQueue *pq) {
             } else {
                 break;
             }
+
         } else {
             break;
         }
