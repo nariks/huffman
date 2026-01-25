@@ -77,7 +77,6 @@ int main(int argc, char *argv[]) {
     char path_buffer[256];
     print_huffman_codes(root, path_buffer, 0);
 
-
     // Memory cleanup
     pq_destroy(pq);
     free_tree(root);
