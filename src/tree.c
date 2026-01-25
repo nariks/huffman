@@ -1,6 +1,20 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "tree.h"
+
+// TODO (Week 3): Implement this helper to find the smallest ASCII value in a subtree.
+// This is used by the Priority Queue's is_smaller() for tie-breaking.
+unsigned char get_min_char(HuffmanNode* node) {
+    // TODO: 
+    // 1. If node is NULL, return 255 (the highest possible byte value).
+    // 2. If it's a leaf node, return node->value.
+    // 3. Otherwise, recursively find the min in left and right subtrees and return the smaller one.
+
+    // Suppress -Wunused-parameter until student implementation
+    (void)node;
+    return 0;
+}
 
 HuffmanNode* create_leaf_node(unsigned char value, uint64_t freq) {
     HuffmanNode *node = malloc(sizeof(HuffmanNode));
@@ -28,34 +42,18 @@ void free_tree(HuffmanNode *root) {
     free(root);
 }
 
-void print_huffman_codes(HuffmanNode *root, char *path, int depth) {
-    if (!root) return;
+// TODO (Week 3): Implement the recursive tree traversal to build the bit-string table.
+void build_code_table(HuffmanNode* root, char** table, char* path, int depth) {
+    // TODO:
+    // 1. Base case: If root is NULL, return.
+    // 2. Leaf case: If it's a leaf, null-terminate path[depth] and strdup(path) into table[root->value].
+    // 3. Recursive step: 
+    //    - If left exists, set path[depth] = '0' and recurse (depth + 1).
+    //    - If right exists, set path[depth] = '1' and recurse (depth + 1).
 
-    // Leaf node: We've reached a character
-    if (!root->left && !root->right) {
-        path[depth] = '\0';
-        
-        // Output formatting: Hex, Char, Frequency, and the Bit String
-        // Determine if character is printable, otherwise show a dot
-        char display_char = (root->value >= 32 && root->value <= 126) ? (char)root->value : '.';
-
-        // Print in a structured, column-aligned format
-        printf("0x%02X | '%c' | Freq: %-10llu | Code: %s\n", 
-            root->value, 
-            display_char, 
-            (unsigned long long)root->freq, 
-            path);
-        return;
-    }
-
-    // Standard recursive walk: Left is 0, Right is 1
-    if (root->left) {
-        path[depth] = '0';
-        print_huffman_codes(root->left, path, depth + 1);
-    }
-    
-    if (root->right) {
-        path[depth] = '1';
-        print_huffman_codes(root->right, path, depth + 1);
-    }
+    // Suppress -Wunused-parameter until student implementation
+    (void)root;
+    (void)table;
+    (void)path;
+    (void)depth;
 }

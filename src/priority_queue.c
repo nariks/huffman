@@ -1,5 +1,19 @@
 #include <stdlib.h>
 #include "priority_queue.h"
+#include "tree.h"
+
+// TODO (Week 3): Implement this helper to ensure a deterministic tree.
+// Deterministic comparison: Frequency first, then lowest ASCII character 
+// (use the get_min_char function from tree.h).
+static bool is_smaller(HuffmanNode *a, HuffmanNode *b) {
+    // TODO: 1. If frequencies are different, return a->freq < b->freq
+    // TODO: 2. If frequencies are equal, return get_min_char(a) < get_min_char(b)
+    
+    // Suppress -Wunused-parameter until student implementation
+    (void)a;
+    (void)b;
+    return false;
+}
 
 PriorityQueue* pq_create(uint32_t capacity) {
     PriorityQueue *pq = malloc(sizeof(PriorityQueue));
@@ -13,7 +27,12 @@ void pq_insert(PriorityQueue *pq, HuffmanNode *node) {
     uint32_t i = pq->size++;
     while (i > 0) {
         uint32_t p = (i - 1) / 2; // Find the Boss
-        if (pq->nodes[p]->freq <= node->freq) break;
+        // TODO (Week 3): Replace the simple <= check with your new is_smaller function.
+        // This ensures the tree is built exactly the same way every time.
+        // Suppress -Wunused-function until student implementation
+        (void)is_smaller;
+        if (pq->nodes[p]->freq <= node->freq) break; 
+
         pq->nodes[i] = pq->nodes[p]; // Boss moves down
         i = p;
     }
@@ -41,12 +60,14 @@ HuffmanNode* pq_extract_min(PriorityQueue *pq) {
     uint32_t child = 1; // Start by looking at the Left Child (0 * 2 + 1)
 
     while (child < pq->size) {
-        // If the Right child exists and is smaller than the Left, pick the Right
+        // TODO (Week 3): Update this check to use is_smaller.
+        // If the Right child exists and is "smaller" (via tie-breaker), pick the Right.
         if (child + 1 < pq->size && pq->nodes[child + 1]->freq < pq->nodes[child]->freq) {
             child++;
         }
 
-        // Tie-breaker logic: If our last_node is smaller or equal, we've found its home
+        // TODO (Week 3): Update this tie-breaker to use is_smaller.
+        // If our last_node is smaller than the smallest child, we've found its home.
         if (last_node->freq <= pq->nodes[child]->freq) {
             break;
         }
