@@ -53,10 +53,6 @@ int main(int argc, char *argv[]) {
 
     int internal_nodes_created = 0; // Track this to verify tree integrity
 
-    // for (uint32_t i = 0; i < pq->size; i++) {
-    //     printf("eleement %u, %c -> %llu\n", i, pq->nodes[i]->value, pq->nodes[i]->freq);
-    // }
-
     while((pq->size) > 1) {
         HuffmanNode *left =  pq_extract_min(pq);
         HuffmanNode *right = pq_extract_min(pq);
