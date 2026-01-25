@@ -37,35 +37,25 @@ int main(int argc, char *argv[]) {
     }
 
     // --- Phase 2: Building the Tree ---
-    /* * TODO 4.0: Initialize the Priority Queue
-     * Use map.unique_chars to determine the initial capacity of your Min-Heap.
-     */
-
+    // Initialize the Priority Queue 
     PriorityQueue *pq = pq_create(map.unique_chars);
 
-    /* * TODO 4.1: Load the Leaf Nodes
-     * Iterate through your FrequencyMap and insert a leaf node for every 
-     * character with a count > 0 into your Priority Queue.
-     */
+    // Load the Leaf Nodes
 
     for (int i = 0; i < 256; i++) {
         if (map.counts[i] > 0) {
             HuffmanNode *leaf_node = create_leaf_node(i, map.counts[i]);
             pq_insert(pq, leaf_node);
         }
-
     }
 
-    /* * TODO 4.2: Build the Huffman Tree
-     * Implement the Huffman algorithm:
-     * 1. While the PQ has more than 1 node:
-     * a. Extract the two nodes with the lowest frequency.
-     * b. Create a new internal node with these two as children.
-     * c. Insert the new internal node back into the PQ.
-     * 2. The remaining node in the PQ is your Tree Root.
-     */
+    // Implement the Huffman algorithm:
 
     int internal_nodes_created = 0; // Track this to verify tree integrity
+
+    // for (uint32_t i = 0; i < pq->size; i++) {
+    //     printf("eleement %u, %c -> %llu\n", i, pq->nodes[i]->value, pq->nodes[i]->freq);
+    // }
 
     while((pq->size) > 1) {
         HuffmanNode *left =  pq_extract_min(pq);
@@ -91,12 +81,8 @@ int main(int argc, char *argv[]) {
     char path_buffer[256];
     print_huffman_codes(root, path_buffer, 0);
 
-    // --- Cleanup ---
-    /* * TODO 4.3: Memory Management
-     * Ensure you have a recursive function to free your tree and
-     * a function to destroy your Priority Queue to prevent memory leaks.
-     */
 
+    // Memory cleanup
     pq_destroy(pq);
     free_tree(root);
     

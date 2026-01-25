@@ -3,16 +3,11 @@
 #include "tree.h"
 
 HuffmanNode* create_leaf_node(unsigned char value, uint64_t freq) {
-    /* * TODO 2.0: Leaf Constructor
-     * 1. Allocate memory for a HuffmanNode.
-     * 2. Set the character value and its frequency.
-     * 3. Ensure the left and right child pointers are NULL.
-     */
-
+    // Allocate memory and initializing a leaf HuffmanNode
     HuffmanNode *node = malloc(sizeof(HuffmanNode));
     if (node == NULL) {
-        perror("Error: Could not allocate memory for node");
-        exit(EXIT_FAILURE);
+        perror("Error: Leaf node allocation failed");
+        return NULL;
     }
 
     node->value = value;
@@ -24,17 +19,11 @@ HuffmanNode* create_leaf_node(unsigned char value, uint64_t freq) {
 }
 
 HuffmanNode* create_internal_node(HuffmanNode *left, HuffmanNode *right) {
-    /* * TODO 2.1: Internal Node Constructor
-     * 1. Allocate memory for a HuffmanNode.
-     * 2. Set frequency to the sum of the left and right children.
-     * 3. Assign the left and right pointers.
-     * 4. Note: Character value is usually ignored for internal nodes.
-     */
-
+    // Allocate memory and initializing a internal HuffmanNode
     HuffmanNode *node = malloc(sizeof(HuffmanNode));
     if (node == NULL) {
-        perror("Error: Could not allocate memory for node");
-        exit(EXIT_FAILURE);
+        perror("Error: Internal node allocation failed");
+        return NULL;
     }
 
     node->freq = left->freq + right->freq;
@@ -46,25 +35,19 @@ HuffmanNode* create_internal_node(HuffmanNode *left, HuffmanNode *right) {
 }
 
 void free_tree(HuffmanNode *root) {
-    /* * TODO 2.2: Recursive Destructor
-     * Use Post-Order Traversal to free the entire tree structure.
-     * Make sure you don't free a NULL pointer.
-     */
-
+    // Post-Order Traversal to free the entire tree structure.
     if (root) {
         free_tree(root->left);
         free_tree(root->right);
         free(root);
     }
-
-
 }
 
 void print_huffman_codes(HuffmanNode *root, char *path, int depth) {
     if (!root) return;
 
     // Leaf node: We've reached a character
-    if (!root->left && !root->right) {
+    if (root->left == NULL && root->right == NULL) {
         path[depth] = '\0';
         
         // Output formatting: Hex, Char, Frequency, and the Bit String
@@ -81,12 +64,12 @@ void print_huffman_codes(HuffmanNode *root, char *path, int depth) {
     }
 
     // Standard recursive walk: Left is 0, Right is 1
-    if (root->left) {
+    if (root->left != NULL) {
         path[depth] = '0';
         print_huffman_codes(root->left, path, depth + 1);
     }
     
-    if (root->right) {
+    if (root->right != NULL) {
         path[depth] = '1';
         print_huffman_codes(root->right, path, depth + 1);
     }
