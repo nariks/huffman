@@ -82,6 +82,5 @@ int main(int argc, char *argv[]) {
     pq_destroy(pq);
     free_tree(root);
     
-    
     return 0;
 }
