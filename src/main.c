@@ -1,8 +1,10 @@
-
 #include <stdio.h>
+#include <stdlib.h>
 #include "frequency.h"
 #include "priority_queue.h"
 #include "tree.h"
+#include "encoder.h"
+#include "utils.h"
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
@@ -10,14 +12,16 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
+    const char *input_path = argv[1];
+
     // --- Phase 1: Frequency Analysis ---
     FrequencyMap map = {0};
-    if (calculate_frequencies(argv[1], &map) != 0) {
-        fprintf(stderr, "Error: Could not process file %s\n", argv[1]);
+    if (calculate_frequencies(input_path, &map) != 0) {
+        fprintf(stderr, "Error: Could not process file %s\n", input_path);
         return 1;
     }
 
-    printf("=== Frequency Analysis: %s ===\n", argv[1]);
+    printf("=== Frequency Analysis: %s ===\n", input_path);
     for (int i = 0; i < 256; i++) {
         if (map.counts[i] > 0) {
             // Print printable chars, otherwise show a dot
@@ -36,28 +40,22 @@ int main(int argc, char *argv[]) {
         return 0;
     }
 
-    // --- Phase 2: Building the Tree ---
-    // Initialize the Priority Queue 
     PriorityQueue *pq = pq_create(map.unique_chars);
 
-    // Load the Leaf Nodes
-
+    // 1. Load the Priority Queue
     for (int i = 0; i < 256; i++) {
         if (map.counts[i] > 0) {
-            HuffmanNode *leaf_node = create_leaf_node(i, map.counts[i]);
-            pq_insert(pq, leaf_node);
+            pq_insert(pq, create_leaf_node((unsigned char)i, map.counts[i]));
         }
     }
 
-    // Implement the Huffman algorithm:
-
-    int internal_nodes_created = 0; // Track this to verify tree integrity
-
-    while((pq->size) > 1) {
-        HuffmanNode *left =  pq_extract_min(pq);
+    // 2. Build the Tree
+    // As the Lead, we track internal nodes to verify tree integrity
+    int internal_nodes_created = 0;
+    while (pq->size > 1) {
+        HuffmanNode *left = pq_extract_min(pq);
         HuffmanNode *right = pq_extract_min(pq);
-        HuffmanNode *internal = create_internal_node(left, right);
-        pq_insert(pq, internal);
+        pq_insert(pq, create_internal_node(left, right));
         internal_nodes_created++;
     }
 
@@ -77,9 +75,57 @@ int main(int argc, char *argv[]) {
     char path_buffer[256];
     print_huffman_codes(root, path_buffer, 0);
 
-    // Memory cleanup
-    pq_destroy(pq);
+    // --- Phase 3: Compression & Bit-Packing ---
+    char output_path[512];
+    generate_output_path(input_path, output_path, sizeof(output_path));
+
+    printf("\n=== Huffman Compression ===\n");
+    printf("Input:  %s\n", input_path);
+    printf("Output: %s\n", output_path);
+
+    // TODO (Week 3): 1. Generate the lookup table.
+    // Use your recursive build_code_table function to fill this array
+    // with the bit-string "directions" for each character.
+    char *code_table[256] = {0};
+    // build_code_table(root, code_table, path_buffer, 0); 
+    printf("Result: ✅ Lookup table generated.\n");
+
+    // 2. Open the output .huff file
+    FILE *out = fopen(output_path, "wb");
+    if (!out) { 
+        perror("Error opening output file"); 
+        // Cleanup before exiting
+        for (int i = 0; i < 256; i++) if (code_table[i]) free(code_table[i]);
+        free_tree(root);
+        pq_destroy(pq);
+        return 1; 
+    }
+
+    // TODO (Week 4 Teaser): 3. Write the Header.
+    // We store the total size and the frequency counts so the DECODER 
+    // can rebuild the tree later. Without this, the .huff file is just gibberish.
+    fwrite(&map.total_size, sizeof(uint64_t), 1, out);
+    fwrite(map.counts, sizeof(uint64_t), 256, out);
+    printf("Result: ✅ File header written (Header Size: %lu bytes).\n", 
+            sizeof(uint64_t) + (sizeof(uint64_t) * 256));
+
+    // TODO (Week 3): 4. Run the Encoding Engine.
+    // This is the big one! Call encode_data to read the input file one last time,
+    // look up each character in your code_table, and pack the bits into the output.
+    
+    // Explicitly close the file to ensure the final byte is flushed to disk
+    fclose(out);
+
+    printf("Result: ✅ Bit-packing complete.\n\n");
+
+    // TODO (Week 3): 5. Show the victory stats.
+    // Use the function in utils.c to compare the original and compressed sizes.
+    print_stats(input_path, output_path);
+
+    // --- Cleanup ---
+    // Remember: build_code_table used strdup(), so we must free each string!
     free_tree(root);
+    pq_destroy(pq);
     
     return 0;
 }

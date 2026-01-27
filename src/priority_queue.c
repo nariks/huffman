@@ -1,124 +1,93 @@
 #include <stdlib.h>
-#include <stdio.h>
 #include "priority_queue.h"
+#include "tree.h"
+
+// TODO (Week 3): Implement this helper to ensure a deterministic tree.
+// Deterministic comparison: Frequency first, then lowest ASCII character 
+// (use the get_min_char function from tree.h).
+static bool is_smaller(HuffmanNode *a, HuffmanNode *b) {
+    // TODO: 1. If frequencies are different, return a->freq < b->freq
+    // TODO: 2. If frequencies are equal, return get_min_char(a) < get_min_char(b)
+    
+    // Suppress -Wunused-parameter until student implementation
+    (void)a;
+    (void)b;
+    return false;
+}
 
 PriorityQueue* pq_create(uint32_t capacity) {
-
-    //Allocating memory for the priority queue
     PriorityQueue *pq = malloc(sizeof(PriorityQueue));
-    if (!pq) {
-        perror("Error: Priority queue allocation failed");
-        return NULL;
-    }
-
-    //Allocate memory for internal nodes array
-    pq->nodes = malloc(capacity * sizeof(HuffmanNode*));
-    if (!pq->nodes) {
-        perror("Error: Priority queue internal node allocation failed");
-        return NULL;
-    }
-
+    pq->nodes = malloc(sizeof(HuffmanNode*) * capacity);
     pq->size = 0;
     pq->capacity = capacity;
-    return pq; 
+    return pq;
 }
 
 void pq_insert(PriorityQueue *pq, HuffmanNode *node) {
-    // "Sift-Up" (Insertion)
-    if (pq->size < pq->capacity) {
-        pq->size++;
-    } else {
-        fprintf(stderr, "Queue capacity reached!\n");
-        return;
+    uint32_t i = pq->size++;
+    while (i > 0) {
+        uint32_t p = (i - 1) / 2; // Find the Boss
+        // TODO (Week 3): Replace the simple <= check with your new is_smaller function.
+        // This ensures the tree is built exactly the same way every time.
+        // Suppress -Wunused-function until student implementation
+        (void)is_smaller;
+        if (pq->nodes[p]->freq <= node->freq) break; 
+
+        pq->nodes[i] = pq->nodes[p]; // Boss moves down
+        i = p;
     }
-
-    uint32_t child_index = pq->size - 1;
-    
-    while(child_index) {
-        uint64_t parent_index = (child_index - 1) / 2;
-        uint64_t child_freq = node->freq;
-        uint64_t parent_freq = pq->nodes[parent_index]->freq;
-
-        if (child_freq < parent_freq) {
-            pq->nodes[child_index] = pq->nodes[parent_index];
-            child_index = parent_index;
-        } else {
-            break;
-        }
-    }
-    
-    pq->nodes[child_index] = node;
-
-    return;
+    pq->nodes[i] = node; // Node climbs to its spot
 }
 
 HuffmanNode* pq_extract_min(PriorityQueue *pq) {
+    // 1. Check if the queue is empty
+    if (pq->size == 0) return NULL;
 
-    
-    HuffmanNode *min_node = NULL;
+    // 2. The "CEO" (smallest freq) is always at Index 0
+    HuffmanNode *min_node = pq->nodes[0];
 
-    if (!pq_is_empty(pq)) {
-        min_node = pq->nodes[0];
-        pq->nodes[0] = pq->nodes[pq->size - 1];
-        pq->nodes[pq->size - 1] = NULL;
-        pq->size--;
+    // 3. Remove the last node in the array to fill the hole
+    HuffmanNode *last_node = pq->nodes[--pq->size];
+
+    // 4. If the queue is now empty, just return the node
+    if (pq->size == 0) {
+        pq->nodes[0] = NULL; // Optional safety
+        return min_node;
     }
 
-    uint32_t parent_index = 0;
+    // 5. Percolate Down (Sift-Down)
+    uint32_t i = 0;
+    uint32_t child = 1; // Start by looking at the Left Child (0 * 2 + 1)
 
-    //sinking the new root
-    while(((2 * parent_index) + 1) < pq->size) {
-        uint32_t left_child_index = (2 * parent_index) + 1;
-        uint32_t right_child_index = (2 * parent_index) + 2;
-        uint64_t parent_freq = pq->nodes[parent_index]->freq;
+    while (child < pq->size) {
+        // TODO (Week 3): Update this check to use is_smaller.
+        // If the Right child exists and is "smaller" (via tie-breaker), pick the Right.
+        if (child + 1 < pq->size && pq->nodes[child + 1]->freq < pq->nodes[child]->freq) {
+            child++;
+        }
 
-        //if root has both left and right children
-        if (right_child_index < pq->size) {
-            uint64_t right_freq = pq->nodes[right_child_index]->freq;
-            uint64_t left_freq = pq->nodes[left_child_index]->freq;
+        // TODO (Week 3): Update this tie-breaker to use is_smaller.
+        // If our last_node is smaller than the smallest child, we've found its home.
+        if (last_node->freq <= pq->nodes[child]->freq) {
+            break;
+        }
 
-            uint64_t smallest_freq = parent_freq;
-            uint32_t smallest_index = parent_index;
-            
-            if (smallest_freq > left_freq) {
-                smallest_index = left_child_index;
-                smallest_freq = left_freq;
-            } 
+        // Move the smaller child up into the current hole
+        pq->nodes[i] = pq->nodes[child];
 
-            if (smallest_freq > right_freq) {
-                smallest_index = right_child_index;
-                smallest_freq = right_freq;
-            }
-
-            if (smallest_freq != parent_freq) {
-                HuffmanNode *temp = pq->nodes[smallest_index];
-                pq->nodes[smallest_index] = pq->nodes[parent_index];
-                pq->nodes[parent_index] = temp;
-                parent_index = smallest_index;
-            } else {
-                break;
-            }
-        
-        // if root has left child only    
-        } else if (left_child_index < pq->size) {        
-            uint64_t left_freq = pq->nodes[left_child_index]->freq;
-
-            if (parent_freq > left_freq) { 
-                    HuffmanNode *temp = pq->nodes[left_child_index];
-                    pq->nodes[left_child_index] = pq->nodes[parent_index];
-                    pq->nodes[parent_index] = temp;
-                    parent_index = left_child_index;
-            } else {
-                break;
-            }
-        } 
+        // Update our index to the child's old spot and calculate the next level
+        i = child;
+        child = i * 2 + 1;
     }
+
+    // 6. Place the last_node into its final resting spot
+    pq->nodes[i] = last_node;
 
     return min_node;
 }
 
 bool pq_is_empty(PriorityQueue *pq) {
-    return (pq->size == 0);
+    return pq->size == 0;
 }
 
 void pq_destroy(PriorityQueue *pq) {

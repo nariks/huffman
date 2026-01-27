@@ -14,6 +14,7 @@ HuffmanNode* create_leaf_node(unsigned char value, uint64_t freq);
 HuffmanNode* create_internal_node(HuffmanNode *left, HuffmanNode *right);
 void free_tree(HuffmanNode *root);
 
-void print_huffman_codes(HuffmanNode *root, char *path, int depth);
+void build_code_table(HuffmanNode* root, char** table, char* path, int depth);
+unsigned char get_min_char(HuffmanNode* node);
 
 #endif
