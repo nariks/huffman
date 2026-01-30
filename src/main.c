@@ -83,11 +83,9 @@ int main(int argc, char *argv[]) {
     printf("Input:  %s\n", input_path);
     printf("Output: %s\n", output_path);
 
-    // TODO (Week 3): 1. Generate the lookup table.
-    // Use your recursive build_code_table function to fill this array
-    // with the bit-string "directions" for each character.
+    // 1. Generate the lookup table (the "GPS directions" for the encoder)
     char *code_table[256] = {0};
-    // build_code_table(root, code_table, path_buffer, 0); 
+    build_code_table(root, code_table, path_buffer, 0);
     printf("Result: ✅ Lookup table generated.\n");
 
     // 2. Open the output .huff file
@@ -101,29 +99,31 @@ int main(int argc, char *argv[]) {
         return 1; 
     }
 
-    // TODO (Week 4 Teaser): 3. Write the Header.
-    // We store the total size and the frequency counts so the DECODER 
-    // can rebuild the tree later. Without this, the .huff file is just gibberish.
+    // 3. Write the Header (Total Size + Frequency Map)
+    // This allows the decoder to rebuild the exact same tree later.
     fwrite(&map.total_size, sizeof(uint64_t), 1, out);
     fwrite(map.counts, sizeof(uint64_t), 256, out);
     printf("Result: ✅ File header written (Header Size: %lu bytes).\n", 
             sizeof(uint64_t) + (sizeof(uint64_t) * 256));
 
-    // TODO (Week 3): 4. Run the Encoding Engine.
-    // This is the big one! Call encode_data to read the input file one last time,
-    // look up each character in your code_table, and pack the bits into the output.
+    // 4. Run the Encoding Engine
+    // This reads the input file again and packs bits into 'out' using the code_table.
+    if (encode_data(input_path, out, code_table) != 0) {
+        fprintf(stderr, "Error: Encoding process failed.\n");
+        fclose(out);
+        return 1;
+    }
     
     // Explicitly close the file to ensure the final byte is flushed to disk
     fclose(out);
 
     printf("Result: ✅ Bit-packing complete.\n\n");
 
-    // TODO (Week 3): 5. Show the victory stats.
-    // Use the function in utils.c to compare the original and compressed sizes.
+    // 5. Show the victory stats
     print_stats(input_path, output_path);
 
     // --- Cleanup ---
-    // Remember: build_code_table used strdup(), so we must free each string!
+    for (int i = 0; i < 256; i++) if (code_table[i]) free(code_table[i]);
     free_tree(root);
     pq_destroy(pq);
     

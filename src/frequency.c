@@ -13,23 +13,16 @@ int calculate_frequencies(const char *filepath, FrequencyMap *map) {
 
     // Initialize counts to zero
     map->unique_chars = 0;
-    
-    // TODO (Week 3): Initialize map->total_size here. 
-    // This will be the first 8 bytes of your .huff file.
-    
+    map->total_size = 0;
     for (int i = 0; i < 256; i++) {
         map->counts[i] = 0;
     }
 
     unsigned char buffer[BUFFER_SIZE];
     size_t bytes_read;
-    size_t total_read = 0;
 
     while ((bytes_read = fread(buffer, 1, BUFFER_SIZE, file)) > 0) {
-        total_read += bytes_read;
-        
-        // TODO (Week 3): Update map->total_size here using bytes_read.
-        
+        map->total_size += bytes_read;
         for (size_t i = 0; i < bytes_read; i++) {
             unsigned char ch = buffer[i];
 
@@ -42,9 +35,7 @@ int calculate_frequencies(const char *filepath, FrequencyMap *map) {
         }
     }
 
-    // TODO (Week 3): Replace 'total_read' with 'map->total_size' to 
-    // keep your FrequencyMap as the single source of truth.
-    if (total_read == 0) {
+    if (map->total_size == 0) {
         fprintf(stderr, "Warning: %s is empty. No frequencies to analyze.\n", filepath);
     }
 

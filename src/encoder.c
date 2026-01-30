@@ -1,48 +1,49 @@
 #include "encoder.h"
 
 int encode_data(const char *in_path, FILE *out_file, char **code_table) {
-    // TODO (Week 3): Implement the encoding loop
-    // 1. Open the input file for reading
-    // 2. Initialize the BitWriter
-    // 3. For each char: get bit-string from table, write bits via bw_write_bit
-    // 4. Flush and close
+    FILE *in = fopen(in_path, "rb");
+    if (!in) return -1;
 
-    // Suppress -Wunused-parameter until student implementation
-    (void)in_path;
-    (void)out_file;
-    (void)code_table;
+    BitWriter bw = bw_open(out_file);
 
+    int c;
+    while ((c = fgetc(in)) != EOF) {
+        // Use (unsigned char) to ensure values 128-255 map to correct table indices
+        char *code = code_table[(unsigned char)c];
+        if (code) {
+            for (int i = 0; code[i] != '\0'; i++) {
+                bw_write_bit(&bw, code[i] == '1');
+            }
+        }
+    }
+
+    bw_flush(&bw);
+    fclose(in);
     return 0;
 }
 
 BitWriter bw_open(FILE *out) {
-    // TODO (Week 3): Initialize BitWriter (buffer=0, count=0)
-    BitWriter bw = {0};
-
-    // Suppress -Wunused-parameter until student implementation
-    (void)out; 
-    
+    BitWriter bw = {0, 0, out};
     return bw;
 }
 
 void bw_write_bit(BitWriter *bw, int bit) {
-    // TODO (Week 3): Implement the "Bit-Packing" logic:
-    // 1. Position the 'bit' (0 or 1) into the buffer using MSB-first order.
-    //    Hint: Use (1 << (7 - bw->count)) to shift the bit to the correct slot.
-    // 2. Increment the count of bits currently held in the buffer.
-    // 3. If the buffer is full (8 bits):
-    //    - Write the buffer to the file using fputc.
-    //    - Reset both the buffer and the count to 0 for the next byte.
+    // Fill from MSB to LSB (7 down to 0)
+    if (bit) bw->buffer |= (1 << (7 - bw->count));
+    bw->count++;
 
-    // Suppress -Wunused-parameter until student implementation
-    (void)bw;
-    (void)bit;
+    if (bw->count == 8) {
+        fputc(bw->buffer, bw->file);
+        bw->buffer = 0;
+        bw->count = 0;
+    }
 }
 
 void bw_flush(BitWriter *bw) {
-    // TODO (Week 3): Write the final partial byte if count > 0
-    
-    // Suppress -Wunused-parameter until student implementation
-    (void)bw;
+    if (bw->count > 0) {
+        fputc(bw->buffer, bw->file);
+        bw->buffer = 0;
+        bw->count = 0;
+    }
 }
 

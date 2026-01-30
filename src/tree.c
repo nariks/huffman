@@ -3,17 +3,15 @@
 #include <string.h>
 #include "tree.h"
 
-// TODO (Week 3): Implement this helper to find the smallest ASCII value in a subtree.
-// This is used by the Priority Queue's is_smaller() for tie-breaking.
+// Helper to find the smallest ASCII value in a subtree for tie-breaking
 unsigned char get_min_char(HuffmanNode* node) {
-    // TODO: 
-    // 1. If node is NULL, return 255 (the highest possible byte value).
-    // 2. If it's a leaf node, return node->value.
-    // 3. Otherwise, recursively find the min in left and right subtrees and return the smaller one.
+    if (!node) return 255;
+    if (!node->left && !node->right) return node->value;
 
-    // Suppress -Wunused-parameter until student implementation
-    (void)node;
-    return 0;
+    unsigned char left_min = get_min_char(node->left);
+    unsigned char right_min = get_min_char(node->right);
+
+    return (left_min < right_min) ? left_min : right_min;
 }
 
 HuffmanNode* create_leaf_node(unsigned char value, uint64_t freq) {
@@ -42,18 +40,21 @@ void free_tree(HuffmanNode *root) {
     free(root);
 }
 
-// TODO (Week 3): Implement the recursive tree traversal to build the bit-string table.
 void build_code_table(HuffmanNode* root, char** table, char* path, int depth) {
-    // TODO:
-    // 1. Base case: If root is NULL, return.
-    // 2. Leaf case: If it's a leaf, null-terminate path[depth] and strdup(path) into table[root->value].
-    // 3. Recursive step: 
-    //    - If left exists, set path[depth] = '0' and recurse (depth + 1).
-    //    - If right exists, set path[depth] = '1' and recurse (depth + 1).
+    if (!root) return;
 
-    // Suppress -Wunused-parameter until student implementation
-    (void)root;
-    (void)table;
-    (void)path;
-    (void)depth;
+    if (!root->left && !root->right) {
+        path[depth] = '\0';
+        table[root->value] = strdup(path);
+        return;
+    }
+
+    if (root->left) {
+        path[depth] = '0';
+        build_code_table(root->left, table, path, depth + 1);
+    }
+    if (root->right) {
+        path[depth] = '1';
+        build_code_table(root->right, table, path, depth + 1);
+    }
 }
