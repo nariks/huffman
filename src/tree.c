@@ -6,14 +6,16 @@
 // TODO (Week 3): Implement this helper to find the smallest ASCII value in a subtree.
 // This is used by the Priority Queue's is_smaller() for tie-breaking.
 unsigned char get_min_char(HuffmanNode* node) {
-    // TODO: 
-    // 1. If node is NULL, return 255 (the highest possible byte value).
-    // 2. If it's a leaf node, return node->value.
-    // 3. Otherwise, recursively find the min in left and right subtrees and return the smaller one.
-
-    // Suppress -Wunused-parameter until student implementation
-    (void)node;
-    return 0;
+    
+    if (node == NULL) {
+        return 255;
+    } else if (node->right == NULL && node->left == NULL) {
+        return node->value;
+    } else {
+        uint64_t left_min = get_min_char(node->left);
+        uint64_t right_min = get_min_char(node->right);
+        return left_min < right_min ? left_min : right_min;
+    }
 }
 
 HuffmanNode* create_leaf_node(unsigned char value, uint64_t freq) {
@@ -51,9 +53,22 @@ void build_code_table(HuffmanNode* root, char** table, char* path, int depth) {
     //    - If left exists, set path[depth] = '0' and recurse (depth + 1).
     //    - If right exists, set path[depth] = '1' and recurse (depth + 1).
 
-    // Suppress -Wunused-parameter until student implementation
-    (void)root;
-    (void)table;
-    (void)path;
-    (void)depth;
+    if (root == NULL)
+        return;
+
+    if (root->left == NULL && root->right == NULL) {
+        path[depth] = '\0';
+        table[root->value] = strdup(path);
+    } else {
+        if (root->left) {
+            path[depth] = '0';
+            build_code_table(root->left, table, path, depth + 1);
+        }
+
+        if (root->right) {
+            path[depth] = '1';
+            build_code_table(root->right, table, path, depth + 1);
+
+        }
+    }
 }

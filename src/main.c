@@ -87,7 +87,12 @@ int main(int argc, char *argv[]) {
     // Use your recursive build_code_table function to fill this array
     // with the bit-string "directions" for each character.
     char *code_table[256] = {0};
-    // build_code_table(root, code_table, path_buffer, 0); 
+    build_code_table(root, code_table, path_buffer, 0); 
+
+    for(int i = 0; i < 256; i++) {
+        printf("codetable[%c] - %s\n", (char)i, code_table[i] );
+    }
+
     printf("Result: ✅ Lookup table generated.\n");
 
     // 2. Open the output .huff file
@@ -112,6 +117,7 @@ int main(int argc, char *argv[]) {
     // TODO (Week 3): 4. Run the Encoding Engine.
     // This is the big one! Call encode_data to read the input file one last time,
     // look up each character in your code_table, and pack the bits into the output.
+    encode_data(input_path, out, code_table);
     
     // Explicitly close the file to ensure the final byte is flushed to disk
     fclose(out);
