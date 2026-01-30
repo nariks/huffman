@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 #include "tree.h"
+#include "frequency.h"
+#include "priority_queue.h"
 
 // Helper to find the smallest ASCII value in a subtree for tie-breaking
 unsigned char get_min_char(HuffmanNode* node) {
@@ -57,4 +59,32 @@ void build_code_table(HuffmanNode* root, char** table, char* path, int depth) {
         path[depth] = '1';
         build_code_table(root->right, table, path, depth + 1);
     }
+}
+
+HuffmanNode* build_huffman_tree(FrequencyMap *map, PriorityQueue *pq) {
+    // TODO (Week 4): Implement the Shared Tree Building Logic
+    // This logic is now DRY (Don't Repeat Yourself) so both
+    // the Encoder and Decoder can use it.
+    // Remember, you did this already. Just bring it in from main.c
+
+    // 1. Load the Priority Queue
+    //    - Loop through the 256 possible characters in map->counts.
+    //    - If a count is > 0, create a leaf node and insert it into the PQ.
+
+    // 2. The Core Huffman Algorithm
+    //    - While the PQ has more than 1 node:
+    //      a. Extract the two nodes with the smallest frequencies.
+    //      b. Combine them into a new Internal Node.
+    //      c. Insert the Internal Node back into the PQ.
+
+    // 3. Also bring in the Tree validation printf logic here
+
+    // 4. Return the Root
+    //    - The last remaining node in the PQ is the root of your tree.
+
+    // Suppress -Wunused-parameter until student implementation
+    (void)map;
+    (void)pq;
+
+    return NULL;
 }

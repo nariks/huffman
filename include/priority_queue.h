@@ -4,13 +4,13 @@
 #include "tree.h"
 #include <stdbool.h>
 
-typedef struct {
+struct PriorityQueue {
     uint32_t size;                 // Current number of nodes in the heap
     uint32_t capacity;             // Maximum allowed nodes (usually 256)
     HuffmanNode **nodes;           // Array of HuffmanNode pointers
-} PriorityQueue;
+};
 
-/* --- Function Prototypes --- */
+typedef struct PriorityQueue PriorityQueue;
 
 // Lifecycle
 PriorityQueue* pq_create(uint32_t capacity);

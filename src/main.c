@@ -1,18 +1,37 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "frequency.h"
 #include "priority_queue.h"
 #include "tree.h"
 #include "encoder.h"
+#include "decoder.h"
 #include "utils.h"
 
 int main(int argc, char *argv[]) {
-    if (argc < 2) {
-        fprintf(stderr, "Usage: %s <filepath>\n", argv[0]);
+    // TODO (Week 4): Implement CLI Mode Switching
+    // 1. Check for exactly 3 arguments: ./huffman <flag> <filepath>
+    // 2. If the user provides fewer, print a clear usage guide.
+    // 3. Extract the 'mode' (argv[1]) and 'input_path' (argv[2]).
+    if (argc < 3) {
+        fprintf(stderr, "Usage:\n  Compress:   %s -c <file>\n  Decompress: %s -d <file.huff>\n", argv[0], argv[0]);
         return 1;
     }
 
-    const char *input_path = argv[1];
+    const char *input_path = argv[2];
+
+    // TODO (Week 4): The Command Fork
+    // IF mode is "-c":
+    //    - Move your existing Phase 1, 2, and 3 logic here.
+    //    - REFACTOR: Replace your manual tree-building loop with build_huffman_tree().
+    //
+    // ELSE IF mode is "-d":
+    //    - Call decompress_file(input_path).
+    //    - Check the return code and print a success/failure message.
+    //
+    // ELSE:
+    //    - Print "Invalid mode" and return 1. You can use this printf:
+    //    printf(stderr, "Invalid mode: %s. Use -c for compress or -d for decompress.\n", mode);
 
     // --- Phase 1: Frequency Analysis ---
     FrequencyMap map = {0};
@@ -41,6 +60,7 @@ int main(int argc, char *argv[]) {
     }
 
     PriorityQueue *pq = pq_create(map.unique_chars);
+    // TODO (Week 4): REFACTOR: Replace your manual tree-building loop with build_huffman_tree().
 
     // 1. Load the Priority Queue
     for (int i = 0; i < 256; i++) {
@@ -91,7 +111,7 @@ int main(int argc, char *argv[]) {
     // 2. Open the output .huff file
     FILE *out = fopen(output_path, "wb");
     if (!out) { 
-        perror("Error opening output file"); 
+        perror("Error opening output file");
         // Cleanup before exiting
         for (int i = 0; i < 256; i++) if (code_table[i]) free(code_table[i]);
         free_tree(root);
@@ -113,7 +133,7 @@ int main(int argc, char *argv[]) {
         fclose(out);
         return 1;
     }
-    
+
     // Explicitly close the file to ensure the final byte is flushed to disk
     fclose(out);
 
@@ -126,6 +146,18 @@ int main(int argc, char *argv[]) {
     for (int i = 0; i < 256; i++) if (code_table[i]) free(code_table[i]);
     free_tree(root);
     pq_destroy(pq);
-    
+
+    // TODO (Week 4): Decompression code
+    // Remember to put this code under the "-d" mode logic
+    // --- Phase 4: Decompression (Week 4 Implementation) ---
+    printf("=== Huffman Decompression ===\n");
+    printf("Input: %s\n", input_path);
+
+    if (decompress_file(input_path) != 0) {
+        fprintf(stderr, "Error: Decompression failed.\n");
+        return 1;
+    }
+    printf("Result: ✅ File successfully decompressed.\n");
+
     return 0;
 }

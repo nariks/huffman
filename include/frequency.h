@@ -5,11 +5,14 @@
 #include <stddef.h>
 
 // Define a structure to hold our 256-byte frequency map
-typedef struct {
+struct FrequencyMap {
     uint64_t counts[256];   // Individual character frequencies
     uint32_t unique_chars;  // Number of entries > 0 (Useful for PQ capacity)
     uint64_t total_size;    // Total bytes in original file (Stored Little-Endian in .huff)
-} FrequencyMap;
+};
+
+// Create an alias for FrequencyMap to support forward declarations.
+typedef struct FrequencyMap FrequencyMap;
 
 // Function prototype for the analysis logic
 // Returns 0 on success, -1 on error

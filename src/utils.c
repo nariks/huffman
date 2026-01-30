@@ -3,22 +3,45 @@
 #include <string.h>
 #include <sys/stat.h>
 
-/**
- * Generates the output filename by replacing the original extension with .huff
- */
 void generate_output_path(const char* input, char* output, size_t max_len) {
-    // Copy input to output, leaving room for the ".huff" extension
+    // 1. Copy the entire input path to the output buffer
+    // We leave room for the 5 characters in ".huff" plus the null terminator
     strncpy(output, input, max_len - 6);
-    
-    char *dot = strrchr(output, '.');
-    char *slash = strrchr(output, '/');
-    
-    // Only strip the extension if it belongs to the file (after the last slash)
-    if (dot && (!slash || dot > slash)) {
-        *dot = '\0';
-    }
-    
+    output[max_len - 6] = '\0'; // Safety null-termination
+
+    // 2. Simply append ".huff" to the end
+    // This keeps the original extension (e.g., .png or .txt) intact
     strcat(output, ".huff");
+}
+
+void generate_decoded_path(const char* input, char* output, size_t max_len) {
+    // 1. Copy input to output buffer safely
+    strncpy(output, input, max_len - 1);
+    output[max_len - 1] = '\0';
+
+    // 2. Find ".huff" and remove it
+    char *huff_ext = strstr(output, ".huff");
+    if (huff_ext) {
+        *huff_ext = '\0';
+
+        // 3. Find the original extension (e.g., the '.' in image.png)
+        char *orig_ext = strrchr(output, '.');
+        if (orig_ext) {
+            char suffix[16];
+            strncpy(suffix, orig_ext, sizeof(suffix) - 1);
+            suffix[sizeof(suffix) - 1] = '\0';
+
+            *orig_ext = '\0'; // Remove original extension temporarily
+            strncat(output, "_decoded", max_len - strlen(output) - 1);
+            strncat(output, suffix, max_len - strlen(output) - 1);
+        } else {
+            // No original extension found (e.g., file was just named 'data.huff')
+            strncat(output, "_decoded", max_len - strlen(output) - 1);
+        }
+    } else {
+        // Fallback if file doesn't end in .huff
+        strncat(output, "_decoded", max_len - strlen(output) - 1);
+    }
 }
 
 /**
