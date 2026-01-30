@@ -3,7 +3,7 @@
 #include <string.h>
 #include "tree.h"
 
-// TODO (Week 3): Implement this helper to find the smallest ASCII value in a subtree.
+// Helper to find the smallest ASCII value in a subtree.
 // This is used by the Priority Queue's is_smaller() for tie-breaking.
 unsigned char get_min_char(HuffmanNode* node) {
     
@@ -44,15 +44,9 @@ void free_tree(HuffmanNode *root) {
     free(root);
 }
 
-// TODO (Week 3): Implement the recursive tree traversal to build the bit-string table.
+// Recursive tree traversal to build the bit-string table.
 void build_code_table(HuffmanNode* root, char** table, char* path, int depth) {
-    // TODO:
-    // 1. Base case: If root is NULL, return.
-    // 2. Leaf case: If it's a leaf, null-terminate path[depth] and strdup(path) into table[root->value].
-    // 3. Recursive step: 
-    //    - If left exists, set path[depth] = '0' and recurse (depth + 1).
-    //    - If right exists, set path[depth] = '1' and recurse (depth + 1).
-
+    
     if (root == NULL)
         return;
 

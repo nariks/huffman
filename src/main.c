@@ -89,10 +89,6 @@ int main(int argc, char *argv[]) {
     char *code_table[256] = {0};
     build_code_table(root, code_table, path_buffer, 0); 
 
-    for(int i = 0; i < 256; i++) {
-        printf("codetable[%c] - %s\n", (char)i, code_table[i] );
-    }
-
     printf("Result: ✅ Lookup table generated.\n");
 
     // 2. Open the output .huff file
@@ -106,17 +102,13 @@ int main(int argc, char *argv[]) {
         return 1; 
     }
 
-    // TODO (Week 4 Teaser): 3. Write the Header.
-    // We store the total size and the frequency counts so the DECODER 
-    // can rebuild the tree later. Without this, the .huff file is just gibberish.
+    // 3. Write the Header.
     fwrite(&map.total_size, sizeof(uint64_t), 1, out);
     fwrite(map.counts, sizeof(uint64_t), 256, out);
     printf("Result: ✅ File header written (Header Size: %lu bytes).\n", 
             sizeof(uint64_t) + (sizeof(uint64_t) * 256));
 
-    // TODO (Week 3): 4. Run the Encoding Engine.
-    // This is the big one! Call encode_data to read the input file one last time,
-    // look up each character in your code_table, and pack the bits into the output.
+    // 4. Run the Encoding Engine.
     encode_data(input_path, out, code_table);
     
     // Explicitly close the file to ensure the final byte is flushed to disk
@@ -124,8 +116,7 @@ int main(int argc, char *argv[]) {
 
     printf("Result: ✅ Bit-packing complete.\n\n");
 
-    // TODO (Week 3): 5. Show the victory stats.
-    // Use the function in utils.c to compare the original and compressed sizes.
+    // 5. Show the victory stats.
     print_stats(input_path, output_path);
 
     // --- Cleanup ---
