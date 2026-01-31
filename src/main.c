@@ -121,6 +121,11 @@ int main(int argc, char *argv[]) {
 
     // --- Cleanup ---
     // Remember: build_code_table used strdup(), so we must free each string!
+
+    for (int i = 0; i < 256; i++) {
+        if (code_table[i]) free(code_table[i]);
+    }
+
     free_tree(root);
     pq_destroy(pq);
     
