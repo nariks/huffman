@@ -61,28 +61,7 @@ void build_code_table(HuffmanNode* root, char** table, char* path, int depth) {
     }
 }
 
-HuffmanNode* build_huffman_tree(FrequencyMap *map, PriorityQueue *pq) {
-    // TODO (Week 4): Implement the Shared Tree Building Logic
-    // This logic is now DRY (Don't Repeat Yourself) so both
-    // the Encoder and Decoder can use it.
-    // Remember, you did this already. Just bring it in from main.c
-
-    // 1. Load the Priority Queue
-    //    - Loop through the 256 possible characters in map->counts.
-    //    - If a count is > 0, create a leaf node and insert it into the PQ.
-
-    // 2. The Core Huffman Algorithm
-    //    - While the PQ has more than 1 node:
-    //      a. Extract the two nodes with the smallest frequencies.
-    //      b. Combine them into a new Internal Node.
-    //      c. Insert the Internal Node back into the PQ.
-
-    // 3. Also bring in the Tree validation printf logic here
-
-    // 4. Return the Root
-    //    - The last remaining node in the PQ is the root of your tree.
-
- 
+HuffmanNode* build_huffman_tree(FrequencyMap *map, PriorityQueue *pq) { 
     // 1. Load the Priority Queue
     for (int i = 0; i < 256; i++) {
         if (map->counts[i] > 0) {

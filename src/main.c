@@ -9,11 +9,8 @@
 #include "utils.h"
 
 int main(int argc, char *argv[]) {
-    // TODO (Week 4): Implement CLI Mode Switching
-    // 1. Check for exactly 3 arguments: ./huffman <flag> <filepath>
-    // 2. If the user provides fewer, print a clear usage guide.
-    // 3. Extract the 'mode' (argv[1]) and 'input_path' (argv[2]).
-    if (argc < 3) {
+    
+    if (argc != 3) {
         fprintf(stderr, "Usage:\n  Compress:   %s -c <file>\n  Decompress: %s -d <file.huff>\n", argv[0], argv[0]);
         return 1;
     }
@@ -21,19 +18,7 @@ int main(int argc, char *argv[]) {
     const char *mode = argv[1];
     const char *input_path = argv[2];
 
-    // TODO (Week 4): The Command Fork
-    // IF mode is "-c":
-    //    - Move your existing Phase 1, 2, and 3 logic here.
-    //    - REFACTOR: Replace your manual tree-building loop with build_huffman_tree().
-    //
-    // ELSE IF mode is "-d":
-    //    - Call decompress_file(input_path).
-    //    - Check the return code and print a success/failure message.
-    //
-    // ELSE:
-    //    - Print "Invalid mode" and return 1. You can use this printf:
-    //    printf(stderr, "Invalid mode: %s. Use -c for compress or -d for decompress.\n", mode);
-
+    // Compress logic
     if (strcmp(mode, "-c") == 0) {
 
         // --- Phase 1: Frequency Analysis ---
@@ -122,6 +107,7 @@ int main(int argc, char *argv[]) {
         free_tree(root);
         pq_destroy(pq);
 
+    //Decompress logic
     } else if (strcmp(mode, "-d") == 0) {
 
         printf("=== Huffman Decompression ===\n");
