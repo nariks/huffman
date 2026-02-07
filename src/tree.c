@@ -61,30 +61,34 @@ void build_code_table(HuffmanNode* root, char** table, char* path, int depth) {
     }
 }
 
-HuffmanNode* build_huffman_tree(FrequencyMap *map, PriorityQueue *pq) {
-    // TODO (Week 4): Implement the Shared Tree Building Logic
-    // This logic is now DRY (Don't Repeat Yourself) so both
-    // the Encoder and Decoder can use it.
-    // Remember, you did this already. Just bring it in from main.c
-
+HuffmanNode* build_huffman_tree(FrequencyMap *map, PriorityQueue *pq) { 
     // 1. Load the Priority Queue
-    //    - Loop through the 256 possible characters in map->counts.
-    //    - If a count is > 0, create a leaf node and insert it into the PQ.
+    for (int i = 0; i < 256; i++) {
+        if (map->counts[i] > 0) {
+            pq_insert(pq, create_leaf_node((unsigned char)i, map->counts[i]));
+        }
+    }
 
-    // 2. The Core Huffman Algorithm
-    //    - While the PQ has more than 1 node:
-    //      a. Extract the two nodes with the smallest frequencies.
-    //      b. Combine them into a new Internal Node.
-    //      c. Insert the Internal Node back into the PQ.
+    // 2. Build the Tree
+    int internal_nodes_created = 0;
+    while (pq->size > 1) {
+        HuffmanNode *left = pq_extract_min(pq);
+        HuffmanNode *right = pq_extract_min(pq);
+        pq_insert(pq, create_internal_node(left, right));
+        internal_nodes_created++;
+    }
 
-    // 3. Also bring in the Tree validation printf logic here
+    HuffmanNode *root = pq_extract_min(pq);
 
-    // 4. Return the Root
-    //    - The last remaining node in the PQ is the root of your tree.
+    printf("=== Tree Validation ===\n");
+    printf("Expected Internal Nodes: %u\n", map->unique_chars - 1);
+    printf("Actual Internal Nodes:   %d\n", internal_nodes_created);
 
-    // Suppress -Wunused-parameter until student implementation
-    (void)map;
-    (void)pq;
+    if (internal_nodes_created == (int)map->unique_chars - 1) {
+        printf("Result: ✅ Tree structure is mathematically sound.\n\n");
+    } else {
+        printf("Result: ❌ Tree structure is corrupted!\n\n");
+    }
 
-    return NULL;
+    return root;
 }

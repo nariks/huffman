@@ -1,8 +1,9 @@
 #ifndef PRIORITY_QUEUE_H
 #define PRIORITY_QUEUE_H
 
-#include "tree.h"
 #include <stdbool.h>
+
+typedef struct HuffmanNode HuffmanNode;
 
 struct PriorityQueue {
     uint32_t size;                 // Current number of nodes in the heap
